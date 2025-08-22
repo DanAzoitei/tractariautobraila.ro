@@ -2,11 +2,9 @@
 <html lang="ro">
 <head>
 <script>
-  // 1) dataLayer global
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
 
-  // 2) CONSENT DEFAULT = denied (legal baseline pentru UE)
   gtag('consent', 'default', {
     'ad_storage': 'denied',
     'analytics_storage': 'denied',
@@ -14,7 +12,6 @@
     'ad_personalization': 'denied'
   });
 
-  // 3) Dacă userul a acceptat anterior, acordăm imediat consent = granted
   try {
     if (localStorage.getItem('cookieConsent') === 'granted') {
       gtag('consent', 'update', {
@@ -23,7 +20,6 @@
         'ad_user_data': 'granted',
         'ad_personalization': 'granted'
       });
-      // (opțional) un eveniment pentru debug
       dataLayer.push({event: 'consent_already_granted'});
     }
   } catch(e) {}
@@ -99,7 +95,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   const btnAccept = document.getElementById('cookie-accept');
   const btnClose = document.getElementById('cookie-close');
 
-  // Afișează bannerul doar dacă nu există încă o decizie
   try {
     if (localStorage.getItem('cookieConsent') === 'granted' || localStorage.getItem('cookieConsent') === 'dismissed') {
       banner.style.display = 'none';
@@ -107,9 +102,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   } catch(e){}
 
   btnAccept?.addEventListener('click', function(){
-    // Persistă decizia
     try { localStorage.setItem('cookieConsent','granted'); } catch(e){}
-    // Trimite update în Consent Mode (prin gtag -> dataLayer)
     if (typeof gtag === 'function') {
       gtag('consent', 'update', {
         'ad_storage': 'granted',
@@ -117,13 +110,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         'ad_user_data': 'granted',
         'ad_personalization': 'granted'
       });
-      // (opțional) eveniment pentru GTM/GA4 debug
       dataLayer.push({event:'consent_granted'});
     }
     banner.style.display = 'none';
   });
 
-  // „Mai târziu” ascunde, dar nu acordă consent (rămâne denied)
   btnClose?.addEventListener('click', function(){
     try { localStorage.setItem('cookieConsent','dismissed'); } catch(e){}
     dataLayer.push({event:'consent_dismissed'});
