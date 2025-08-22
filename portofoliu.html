@@ -1,7 +1,33 @@
 <!doctype html>
 <html lang="ro">
 <head>
+<script>
+  // 1) dataLayer global
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
 
+  // 2) CONSENT DEFAULT = denied (legal baseline pentru UE)
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'analytics_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied'
+  });
+
+  // 3) Dacă userul a acceptat anterior, acordăm imediat consent = granted
+  try {
+    if (localStorage.getItem('cookieConsent') === 'granted') {
+      gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'analytics_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted'
+      });
+      // (opțional) un eveniment pentru debug
+      dataLayer.push({event: 'consent_already_granted'});
+    }
+  } catch(e) {}
+</script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -39,5 +65,54 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </main>
 
   <div id="footer-placeholder"></div>
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-live="polite" aria-label="Consimțământ cookie">
+  <span>
+    Folosim cookie-uri (ex. Google Analytics) pentru a îmbunătăți experiența. 
+    Prin accept, ne permiți măsurarea traficului.
+  </span>
+  <div class="cookie-actions">
+    <button id="cookie-accept" class="btn-accept">Accept</button>
+    <button id="cookie-close" class="btn-close" aria-label="Închide">Mai târziu</button>
+  </div>
+</div>
+<script>
+(function(){
+  const banner = document.getElementById('cookie-banner');
+  const btnAccept = document.getElementById('cookie-accept');
+  const btnClose = document.getElementById('cookie-close');
+
+  // Afișează bannerul doar dacă nu există încă o decizie
+  try {
+    if (localStorage.getItem('cookieConsent') === 'granted' || localStorage.getItem('cookieConsent') === 'dismissed') {
+      banner.style.display = 'none';
+    }
+  } catch(e){}
+
+  btnAccept?.addEventListener('click', function(){
+    // Persistă decizia
+    try { localStorage.setItem('cookieConsent','granted'); } catch(e){}
+    // Trimite update în Consent Mode (prin gtag -> dataLayer)
+    if (typeof gtag === 'function') {
+      gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'analytics_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted'
+      });
+      // (opțional) eveniment pentru GTM/GA4 debug
+      dataLayer.push({event:'consent_granted'});
+    }
+    banner.style.display = 'none';
+  });
+
+  // „Mai târziu” ascunde, dar nu acordă consent (rămâne denied)
+  btnClose?.addEventListener('click', function(){
+    try { localStorage.setItem('cookieConsent','dismissed'); } catch(e){}
+    dataLayer.push({event:'consent_dismissed'});
+    banner.style.display = 'none';
+  });
+})();
+</script>
+
 </body>
 </html>
