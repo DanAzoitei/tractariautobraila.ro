@@ -4,21 +4,15 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
-
   gtag('consent', 'default', {
-    'ad_storage': 'denied',
-    'analytics_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied'
+    'ad_storage': 'denied','analytics_storage': 'denied',
+    'ad_user_data': 'denied','ad_personalization': 'denied'
   });
-
   try {
     if (localStorage.getItem('cookieConsent') === 'granted') {
       gtag('consent', 'update', {
-        'ad_storage': 'granted',
-        'analytics_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted'
+        'ad_storage': 'granted','analytics_storage': 'granted',
+        'ad_user_data': 'granted','ad_personalization': 'granted'
       });
       dataLayer.push({event: 'consent_already_granted'});
     }
@@ -31,42 +25,516 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-T3JBRMFG');</script>
 <!-- End Google Tag Manager -->
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Portofoliu — Tractări Auto Brăila</title>
-  <meta name="description" content="Exemple reale de intervenții și transporturi auto în Brăila & Galați.">
+  <title>Portofoliu Prestații — Tractări Auto Brăila</title>
+  <meta name="description" content="Galerie de intervenții reale: tractări auto, platformă și asistență rutieră în Brăila și Galați. Actualizat periodic.">
   <link rel="canonical" href="https://tractariautobraila.ro/portofoliu.html" />
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon.png">
   <script defer src="/assets/js/main.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Acasă","item":"https://tractariautobraila.ro/"},
+      {"@type":"ListItem","position":2,"name":"Portofoliu","item":"https://tractariautobraila.ro/portofoliu.html"}
+    ]
+  }
+  </script>
 </head>
 <body>
-	<!-- Google Tag Manager (noscript) -->
-	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3JBRMFG"
-	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-	<!-- End Google Tag Manager (noscript) -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3JBRMFG"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
   <div id="header-placeholder" data-active="portofoliu"></div>
 
   <main class="container">
-    <h1>Portofoliu</h1>
-    <p class="muted">Selectăm periodic lucrări recente din Facebook și din teren.</p>
 
-    <div class="grid-portfolio big">
-      <!-- Exemplu. Duplică și schimbă sursele -->
-      <a href="/assets/img/portfolio/caz-05.jpg"><img loading="lazy" src="/assets/img/portfolio/caz-05.jpg" alt="Ridicare din șanț - DN2B"></a>
-      <a href="/assets/img/portfolio/caz-06.jpg"><img loading="lazy" src="/assets/img/portfolio/caz-06.jpg" alt="Transport auto rulat - Brăila → Galați"></a>
-      <a href="/assets/img/portfolio/caz-07.jpg"><img loading="lazy" src="/assets/img/portfolio/caz-07.jpg" alt="Tractare după pană - Centură"></a>
-      <!-- ... -->
-    </div>
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a href="/">Acasă</a></li>
+        <li>Portofoliu</li>
+      </ol>
+    </nav>
+
+    <h1>Portofoliu prestații</h1>
+    <p class="muted">Intervenții documentate din teren — actualizat periodic.</p>
+
+    <section class="portfolio wall" aria-label="Intervenții documentate">
+
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-vw-passat-braila-2026-03.html">
+          <img
+            src="/assets/img/portfolio/20260329VWPassat/20260329-VW-Passat-1.jpg"
+            alt="29 Martie 2026 – Tractare VW Passat — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-03">29 Martie 2026</time> – Tractare VW Passat — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-opel-astra-braila-2026-03.html">
+          <img
+            src="/assets/img/portfolio/20260329OpelAstra/20260329OpelAstra-1.jpg"
+            alt="29 Martie 2026 – Tractare Opel Astra — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-03">29 Martie 2026</time> – Tractare Opel Astra — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-opel-vivaro-braila-2026-03.html">
+          <img
+            src="/assets/img/portfolio/20260321OpelVivaro/20260321-Opel-Vivaro-1.jpg"
+            alt="21 Martie 2026 – Tractare Opel Vivaro — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-03">21 Martie 2026</time> – Tractare Opel Vivaro — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-focus-motor-defect-transport-din-faurei-la-service-2026-02.html">
+          <img
+            src="/assets/img/portfolio/20260201Focus-motor-defect-transport-din-Faurei-la-service/20260201Focus-motor-defect-transport-din-Faurei-la-service-1.jpg"
+            alt="1 Februarie 2026 – Tractare Focus — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-02">1 Februarie 2026</time> – Tractare Focus — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Transport auto</li>
+            <li>Faurei → Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-vw-tuareg-brasov-avariata-2026-01.html">
+          <img
+            src="/assets/img/portfolio/20260131VWTuaregBrasov-avariata/20260131VWTuaregBrasov-avariata-1.jpg"
+            alt="31 Ianuarie 2026 – Tractare VW Tuareg — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-01">31 Ianuarie 2026</time> – Tractare VW Tuareg — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brașov</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-mercedes-2026-01.html">
+          <img
+            src="/assets/img/portfolio/20260127Mercedes/20260127Mercedes-1.jpg"
+            alt="27 Ianuarie 2026 – Tractare Mercedes — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-01">27 Ianuarie 2026</time> – Tractare Mercedes — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-nissan-navara-2026-01.html">
+          <img
+            src="/assets/img/portfolio/20260125NissanNavara/20260125NissanNavara-1.jpg"
+            alt="25 Ianuarie 2026 – Tractare Nissan Navara — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-1">25 Ianuarie 2026</time> – Tractare Nissan Navara — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-vw-transporter-2026-01.html">
+          <img
+            src="/assets/img/portfolio/20260113VWTransporter/20260113VWTransporter-1.jpg"
+            alt="13 Ianuarie 2026 – Tractare VW Transporter — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-1">13 Ianuarie 2026</time> – Tractare VW Transporter — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-interventie-2026-01.html">
+          <img
+            src="/assets/img/portfolio/20260105/20260105-1.jpg"
+            alt="5 Ianuarie 2026 – Tractare — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2026-1">5 Ianuarie 2026</time> – Tractare — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-audi-2025-12.html">
+          <img
+            src="/assets/img/portfolio/20251231Audi/20251231Audi-1.jpg"
+            alt="31 Decembrie 2025 – Tractare Audi — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-12">31 Decembrie 2025</time> – Tractare Audi — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-vw-2025-12.html">
+          <img
+            src="/assets/img/portfolio/20251218VW/20251218VW-1.jpg"
+            alt="18 Decembrie 2025 – Tractare VW — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-12">18 Decembrie 2025</time> – Tractare VW — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-interventie-2025-12.html">
+          <img
+            src="/assets/img/portfolio/20251211/20251211-1.jpg"
+            alt="11 Decembrie 2025 – Tractare — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-12">11 Decembrie 2025</time> – Tractare — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-ford-focus-2025-12.html">
+          <img
+            src="/assets/img/portfolio/20251208FordFocus/20251208FordFocus-1.jpg"
+            alt="8 Decembrie 2025 – Tractare Ford Focus — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-12">8 Decembrie 2025</time> – Tractare Ford Focus — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-interventie-2025-11.html">
+          <img
+            src="/assets/img/portfolio/20251121/20251121-1.jpg"
+            alt="21 Noiembrie 2025 – Tractare — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-11">21 Noiembrie 2025</time> – Tractare — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-audi-2025-09.html">
+          <img
+            src="/assets/img/portfolio/20250919Audi/20250919Audi-1.jpg"
+            alt="19 Septembrie 2025 – Tractare Audi — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-09">19 Septembrie 2025</time> – Tractare Audi — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-bmw-2025-09.html">
+          <img
+            src="/assets/img/portfolio/20250916BMW/20250916BMW-1.jpg"
+            alt="16 Septembrie 2025 – Tractare BMW — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-09">16 Septembrie 2025</time> – Tractare BMW — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-dacia-duster-braila-galati-dealer-auto-2025-09.html">
+          <img
+            src="/assets/img/portfolio/20250912DaciaDusterBrailaGalatiDealerAuto/20250912DaciaDusterBrailaGalatiDealerAuto-1.jpg"
+            alt="12 Septembrie 2025 – Tractare Dacia Duster — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-09">12 Septembrie 2025</time> – Tractare Dacia Duster — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Transport dealer</li>
+            <li>Brăila / Galați</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-hyundai-2025-08.html">
+          <img
+            src="/assets/img/portfolio/20250807Hyundai/20250807Hyundai-1.jpg"
+            alt="7 August 2025 – Tractare Hyundai — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-08">7 August 2025</time> – Tractare Hyundai — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-opel-2025-08.html">
+          <img
+            src="/assets/img/portfolio/20250805Opel/20250805Opel-1.jpg"
+            alt="5 August 2025 – Tractare Opel — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-08">5 August 2025</time> – Tractare Opel — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-skoda-2025-08.html">
+          <img
+            src="/assets/img/portfolio/20250804Skoda/20250804Skoda-1.jpg"
+            alt="4 August 2025 – Tractare Skoda — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-08">4 August 2025</time> – Tractare Skoda — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-citroen-2025-07.html">
+          <img
+            src="/assets/img/portfolio/20250722Citroen/20250722Citroen-1.jpg"
+            alt="22 Iulie 2025 – Tractare Citroen — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-07">22 Iulie 2025</time> – Tractare Citroen — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card__media" href="/portofoliu/tractare-vw-2025-07.html">
+          <img
+            src="/assets/img/portfolio/20250716VW/20250716VW-1.jpg"
+            alt="16 Iulie 2025 – Tractare VW — Brăila"
+            loading="lazy"
+            width="1200"
+            height="900"
+          >
+        </a>
+        <div class="card__body">
+          <p class="card__label">
+            <time datetime="2025-07">16 Iulie 2025</time> – Tractare VW — Brăila
+          </p>
+          <p class="card__desc">--</p>
+          <ul class="card__chips">
+            <li>Tractare pe platformă</li>
+            <li>Brăila</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
   </main>
 
   <div id="footer-placeholder"></div>
   <div id="cookie-banner" class="cookie-banner" role="dialog" aria-live="polite" aria-label="Consimțământ cookie">
-  <span>
-    Folosim cookie-uri (ex. Google Analytics) pentru a îmbunătăți experiența. 
-    Prin accept, ne permiți măsurarea traficului.
-  </span>
+  <span>Folosim cookie-uri (ex. Google Analytics) pentru a îmbunătăți experiența. Prin accept, ne permiți măsurarea traficului.</span>
   <div class="cookie-actions">
     <button id="cookie-accept" class="btn-accept">Accept</button>
     <button id="cookie-close" class="btn-close" aria-label="Închide">Mai târziu</button>
@@ -77,27 +545,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   const banner = document.getElementById('cookie-banner');
   const btnAccept = document.getElementById('cookie-accept');
   const btnClose = document.getElementById('cookie-close');
-
   try {
     if (localStorage.getItem('cookieConsent') === 'granted' || localStorage.getItem('cookieConsent') === 'dismissed') {
       banner.style.display = 'none';
     }
   } catch(e){}
-
   btnAccept?.addEventListener('click', function(){
     try { localStorage.setItem('cookieConsent','granted'); } catch(e){}
     if (typeof gtag === 'function') {
-      gtag('consent', 'update', {
-        'ad_storage': 'granted',
-        'analytics_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted'
-      });
+      gtag('consent', 'update', {'ad_storage':'granted','analytics_storage':'granted','ad_user_data':'granted','ad_personalization':'granted'});
       dataLayer.push({event:'consent_granted'});
     }
     banner.style.display = 'none';
   });
-
   btnClose?.addEventListener('click', function(){
     try { localStorage.setItem('cookieConsent','dismissed'); } catch(e){}
     dataLayer.push({event:'consent_dismissed'});
@@ -105,6 +565,5 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   });
 })();
 </script>
-
 </body>
 </html>
