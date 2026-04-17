@@ -40,7 +40,7 @@ img{max-width:100%;height:auto;border-radius:12px;display:block}
 .cards-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .card{background:var(--card);padding:18px;border-radius:16px;border:1px solid #ffffff12}
 
-.grid-portfolio{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid-portfolio{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .grid-portfolio.big{grid-template-columns:repeat(3,minmax(0,1fr))}
 .center{text-align:center;margin:18px 0}
 
