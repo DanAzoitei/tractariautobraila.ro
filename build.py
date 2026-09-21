@@ -165,6 +165,20 @@ def build_page(row):
 
     canonical = f"https://tractariautobraila.ro/portofoliu/{slug}.html"
 
+    # ── Open Graph (titlu/descriere/imagine specifice acestei lucrări) ───────
+    og_title = titlu_seo if titlu_seo else titlu
+    if meta_desc and meta_desc != "--":
+        og_desc = meta_desc
+    elif desc_pagina and desc_pagina != "--":
+        og_desc = desc_pagina
+    else:
+        og_desc = "Intervenție de tractare auto documentată — Tractări Auto Brăila."
+    if imgs:
+        og_folder, og_filename = imgs[0]
+        og_image = f"https://tractariautobraila.ro{img_src(og_folder, og_filename)}"
+    else:
+        og_image = "https://tractariautobraila.ro/assets/img/og-cover.png"
+
     # ── Schema BreadcrumbList ────────────────────────────────────────────────
     schema_breadcrumb = f"""{{
     "@context": "https://schema.org",
@@ -194,6 +208,14 @@ def build_page(row):
   <title>{titlu_seo}</title>
   <meta name="description" content="{meta_desc}">
   <link rel="canonical" href="{canonical}">
+
+  <!-- Open Graph / SEO -->
+  <meta property="og:title" content="{og_title}">
+  <meta property="og:description" content="{og_desc}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{canonical}">
+  <meta property="og:image" content="{og_image}">
+
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon.png">
   <script defer src="/assets/js/main.js"></script>
@@ -307,6 +329,14 @@ def build_index(rows):
   <title>Portofoliu Prestații — Tractări Auto Brăila</title>
   <meta name="description" content="Galerie de intervenții reale: tractări auto, platformă și asistență rutieră în Brăila și Galați. Actualizat periodic.">
   <link rel="canonical" href="https://tractariautobraila.ro/portofoliu.html" />
+
+  <!-- Open Graph / SEO -->
+  <meta property="og:title" content="Portofoliu Prestații — Tractări Auto Brăila">
+  <meta property="og:description" content="Galerie de intervenții reale: tractări auto, platformă și asistență rutieră în Brăila și Galați.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tractariautobraila.ro/portofoliu.html">
+  <meta property="og:image" content="https://tractariautobraila.ro/assets/img/og-cover.png">
+
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon.png">
   <script defer src="/assets/js/main.js"></script>
