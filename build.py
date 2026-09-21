@@ -6,6 +6,10 @@ Citește data/prestatii.csv (sau un Google Sheets publicat ca CSV)
 și generează:
   - portofoliu/<slug>.html  pentru fiecare rând
   - portofoliu.html          (lista de carduri, regenerat complet)
+  - sitemap.xml              (paginile din rădăcină + toate lucrările)
+  - header și footer inline în toate paginile, luate din header.html / footer.html
+    (sursă unică; nu mai depind de JavaScript). Pentru a schimba meniul sau footerul:
+    editezi header.html / footer.html și rulezi python build.py.
 
 UTILIZARE:
   python build.py
@@ -17,6 +21,7 @@ GOOGLE SHEETS (opțional):
 
 import csv
 import os
+import re
 import sys
 import urllib.request
 from datetime import datetime
@@ -38,6 +43,12 @@ TELEFON_URL = "tel:+40736390565"
 
 # Primul element din breadcrumb (în loc de „Acasă”): cuvinte-cheie pe fiecare pagină
 BRAND       = "Tractări Auto Brăila"
+
+# Domeniul site-ului (folosit în sitemap.xml)
+SITE_URL    = "https://tractariautobraila.ro"
+
+# Fișiere-sursă pentru header/footer: nu sunt pagini (excluse din sitemap și din procesare)
+FRAGMENT_FILES = {"header.html", "footer.html"}
 
 # ── GTM / cookie snippet (copiat din paginile existente) ──────────────────────
 GTM_HEAD = """<script>
@@ -219,6 +230,121 @@ def raport_date_noi(rows):
 
 # ── Generator pagini individuale ──────────────────────────────────────────────
 
+# ── Header / footer inline (sursă unică: header.html + footer.html) ─────────────
+#
+# Paginile conțin header/footer direct în HTML, între markere:
+#     <!-- @header:start active=servicii --> ... <!-- @header:end -->
+# La fiecare build blocul e rescris din header.html / footer.html, deci toate paginile
+# rămân identice. Placeholder-ele vechi (<div id="header-placeholder" data-active="...">)
+# sunt convertite automat la primul build. main.js rămâne doar ca plasă de siguranță
+# pentru o pagină nerebuilduită (dacă nu găsește placeholder, nu face nimic).
+
+_RE_HDR = re.compile(
+    r'(?:[ \t]*<!--\s*Header injectat\s*-->[ \t]*\n)?[ \t]*'
+    r'(?:<div id="header-placeholder"(?:\s+data-active="([^"]*)")?\s*></div>'
+    r'|<!-- @header:start(?: active=([\w-]+))? -->.*?<!-- @header:end -->)',
+    re.S)
+_RE_FTR = re.compile(
+    r'(?:[ \t]*<!--\s*Footer injectat\s*-->[ \t]*\n)?[ \t]*'
+    r'(?:<div id="footer-placeholder"\s*></div>'
+    r'|<!-- @footer:start -->.*?<!-- @footer:end -->)',
+    re.S)
+
+
+def read_fragment(name):
+    """Conținutul unui fragment (header.html / footer.html), fără comentariul de pe prima linie."""
+    text = Path(name).read_text(encoding="utf-8-sig").replace("\r\n", "\n")
+    text = re.sub(r'^\s*<!--\s*' + re.escape(name) + r'\s*-->\s*', "", text)
+    return text.strip()
+
+
+def render_header(active=""):
+    src = read_fragment("header.html")
+    if active:
+        pat = re.compile(r'<a href="([^"]*)" data-nav="' + re.escape(active) + r'"')
+        src, n = pat.subn(
+            lambda m: f'<a href="{m.group(1)}" class="active" aria-current="page" data-nav="{active}"', src)
+        if n == 0:
+            print(f'  ⚠ data-active="{active}" nu are corespondent (data-nav) în header.html')
+    attr = f" active={active}" if active else ""
+    return (f"<!-- @header:start{attr} -->\n"
+            "<!-- generat din header.html de build.py — nu edita aici -->\n"
+            f"{src}\n"
+            "<!-- @header:end -->")
+
+
+def render_footer():
+    src = read_fragment("footer.html").replace(
+        '<span id="y-copy"></span>', f'<span id="y-copy">{datetime.now().year}</span>')
+    return ("<!-- @footer:start -->\n"
+            "<!-- generat din footer.html de build.py — nu edita aici -->\n"
+            f"{src}\n"
+            "<!-- @footer:end -->")
+
+
+def _indent(block, prefix="  "):
+    return "\n".join((prefix + line) if line else line for line in block.split("\n"))
+
+
+def apply_shared(page):
+    """Pune header/footer actuale în pagină (înlocuiește placeholder-ul sau blocul existent)."""
+    page = _RE_HDR.sub(lambda m: _indent(render_header(m.group(1) or m.group(2) or "")), page)
+    page = _RE_FTR.sub(lambda m: _indent(render_footer()), page)
+    return page
+
+
+def sync_static_pages():
+    """Aplică header/footer inline în paginile scrise de mână din rădăcină (index, servicii, contact…).
+    portofoliu.html e generat separat. Păstrează sfârșiturile de linie ale fișierului (CRLF/LF)
+    și rescrie fișierul doar dacă s-a schimbat ceva."""
+    for path in sorted(Path(".").glob("*.html")):
+        if path.name in FRAGMENT_FILES or path.name == "portofoliu.html":
+            continue
+        raw = path.read_bytes().decode("utf-8")
+        crlf = "\r\n" in raw
+        new = apply_shared(raw.replace("\r\n", "\n"))
+        if crlf:
+            new = new.replace("\n", "\r\n")
+        if new != raw:
+            path.write_bytes(new.encode("utf-8"))
+            print(f"  ✓ {path.name} (header/footer inline)")
+        else:
+            print(f"  = {path.name} (neschimbat)")
+
+
+# ── Sitemap ───────────────────────────────────────────────────────────────────
+
+def build_sitemap(rows):
+    """Generează sitemap.xml: paginile HTML din rădăcină + fiecare lucrare din portofoliu.
+    lastmod apare doar pentru lucrări (data intervenției, din data_iso)."""
+    ordine = {"index.html": 0, "servicii.html": 1, "portofoliu.html": 2, "contact.html": 3}
+    urls = []
+    pagini = sorted((p for p in Path(".").glob("*.html") if p.name not in FRAGMENT_FILES),
+                    key=lambda p: (ordine.get(p.name, 99), p.name))
+    for path in pagini:
+        head = path.read_text(encoding="utf-8-sig")
+        if re.search(r'<meta[^>]+name=["\']robots["\'][^>]+noindex', head, re.I):
+            continue
+        loc = f"{SITE_URL}/" if path.name == "index.html" else f"{SITE_URL}/{path.name}"
+        urls.append((loc, ""))
+    for row in sorted(rows, key=lambda r: r.get("data_iso", ""), reverse=True):
+        slug = field(row, "slug")
+        if slug:
+            urls.append((f"{SITE_URL}/portofoliu/{slug}.html", field(row, "data_iso")))
+
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, lastmod in urls:
+        lines.append("  <url>")
+        lines.append(f"    <loc>{esc(loc)}</loc>")
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", lastmod or ""):
+            lines.append(f"    <lastmod>{lastmod}</lastmod>")
+        lines.append("  </url>")
+    lines.append("</urlset>")
+    Path("sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"  ✓ sitemap.xml ({len(urls)} URL-uri)")
+
+
 def build_page(row):
     slug        = row["slug"].strip()
     data_iso    = row["data_iso"].strip()
@@ -348,7 +474,7 @@ def build_page(row):
 </html>
 """
     out_path = Path("portofoliu") / f"{slug}.html"
-    out_path.write_text(html, encoding="utf-8")
+    out_path.write_text(apply_shared(html), encoding="utf-8")
     print(f"  ✓ portofoliu/{slug}.html")
 
 
@@ -457,7 +583,7 @@ def build_index(rows):
 </body>
 </html>
 """
-    Path("portofoliu.html").write_text(html, encoding="utf-8")
+    Path("portofoliu.html").write_text(apply_shared(html), encoding="utf-8")
     print("  ✓ portofoliu.html (regenerat)")
 
 
@@ -483,6 +609,12 @@ def main():
 
     print("\n🗂 Regenerez portofoliu.html...")
     build_index(rows)
+
+    print("\n🧩 Header/footer inline în paginile din rădăcină...")
+    sync_static_pages()
+
+    print("\n🗺 Generez sitemap.xml...")
+    build_sitemap(rows)
 
     raport_date_noi(rows)
     print(f"\n✅ Gata! {len(rows)} prestații procesate.")

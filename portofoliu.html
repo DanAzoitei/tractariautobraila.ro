@@ -57,7 +57,35 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3JBRMFG"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-  <div id="header-placeholder" data-active="portofoliu"></div>
+  <!-- @header:start active=portofoliu -->
+  <!-- generat din header.html de build.py — nu edita aici -->
+  <header class="site-header">
+    <div class="topbar">
+      <div class="brand">
+        <a href="/"><img src="/assets/img/logoIR.png" alt="Tractări Auto Brăila" class="logo"></a>
+        <a href="/"><span class="brand-text">Tractări Auto Brăila</span></a>
+      </div>
+
+      <a class="cta-phone" href="tel:+40736390565" aria-label="Sună acum">
+        <svg viewBox="0 0 24 24" class="icon"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11 11 0 003.5.56 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.56 3.5 1 1 0 01-.25 1z"/></svg>
+        <span>Sună acum</span>
+      </a>
+
+      <button class="menu-toggle" aria-label="Deschide meniul" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <nav class="main-nav" aria-label="Navigare principală">
+      <ul>
+        <li><a href="/" data-nav="acasa">Acasă</a></li>
+        <li><a href="/servicii.html" data-nav="servicii">Servicii</a></li>
+        <li><a href="/portofoliu.html" class="active" aria-current="page" data-nav="portofoliu">Portofoliu</a></li>
+        <li><a href="/contact.html" data-nav="contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <!-- @header:end -->
 
   <main class="container">
 
@@ -540,7 +568,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   </main>
 
-  <div id="footer-placeholder"></div>
+  <!-- @footer:start -->
+  <!-- generat din footer.html de build.py — nu edita aici -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <section>
+        <h3>Tractări Auto Brăila</h3>
+        <p>Disponibili în Brăila, Galați și împrejurimi.</p>
+        <p><strong>Tel:</strong> <a href="tel:+40736390565">+40 736 390 565</a></p>
+        <p><strong>WhatsApp:</strong> <a href="https://wa.me/40736390565" target="_blank" rel="noopener">Scrie-ne</a></p>
+      </section>
+      <section>
+        <h3>Rapid către</h3>
+        <ul class="footer-links">
+          <li><a href="/servicii.html">Servicii</a></li>
+          <li><a href="/portofoliu.html">Portofoliu</a></li>
+          <li><a href="/contact.html">Contact</a></li>
+        </ul>
+      </section>
+      <section>
+        <h3>Acoperire</h3>
+        <p>Brăila • Galați • DN2B • A2 • Împrejurimi</p>
+        <p><a href="https://maps.app.goo.gl/kSUoCE4kTSCkLKjd7" target="_blank" rel="noopener">Vezi pe hartă</a></p>
+      </section>
+    </div>
+
+    <div class="legal">
+      <p>© <span id="y-copy">2026</span> Tractări Auto Brăila. Toate drepturile rezervate.</p>
+    </div>
+  </footer>
+  <!-- @footer:end -->
   <div id="cookie-banner" class="cookie-banner" role="dialog" aria-live="polite" aria-label="Consimțământ cookie">
   <span>Folosim cookie-uri (ex. Google Analytics) pentru a îmbunătăți experiența. Prin accept, ne permiți măsurarea traficului.</span>
   <div class="cookie-actions">
