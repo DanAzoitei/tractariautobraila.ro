@@ -20,6 +20,7 @@ import os
 import sys
 import urllib.request
 from datetime import datetime
+from html import escape as esc
 from pathlib import Path
 
 # ── Configurare ────────────────────────────────────────────────────────────────
@@ -34,6 +35,9 @@ IMAGES_DIR  = "assets/img/portfolio"
 # Telefon afișat pe pagini
 TELEFON     = "0736 390 565"
 TELEFON_URL = "tel:+40736390565"
+
+# Primul element din breadcrumb (în loc de „Acasă”): cuvinte-cheie pe fiecare pagină
+BRAND       = "Tractări Auto Brăila"
 
 # ── GTM / cookie snippet (copiat din paginile existente) ──────────────────────
 GTM_HEAD = """<script>
@@ -147,6 +151,72 @@ def img_src(folder, filename):
     return f"/assets/img/portfolio/{filename}"
 
 
+def field(row, key):
+    """Valoare curată dintr-un câmp opțional; lipsa coloanei, None și '--' = gol."""
+    v = (row.get(key) or "").strip()
+    return "" if v == "--" else v
+
+
+def traseu(row):
+    """Text scurt de traseu din coloanele noi (fallback când `locatie` e goală)."""
+    plecare = field(row, "plecare_oras")
+    dest    = field(row, "destinatie_oras")
+    if plecare and dest and dest.lower() != plecare.lower():
+        return f"{plecare} → {dest}"
+    return plecare
+
+
+def detalii_html(row, serviciu, data_disp):
+    """Bloc «Detalii intervenție» + «Ce a fost deosebit».
+    Gol dacă lucrarea nu are niciuna dintre coloanele noi completate."""
+    vehicul = field(row, "vehicul")
+    p_oras  = field(row, "plecare_oras")
+    p_zona  = field(row, "plecare_zona")
+    p_strada = field(row, "plecare_strada")
+    d_oras  = field(row, "destinatie_oras")
+    special = field(row, "deosebit")
+    if not any([vehicul, p_oras, p_zona, p_strada, d_oras, special]):
+        return ""
+
+    # Adresa de la specific la general: stradă, zonă/cartier, oraș
+    plecare = ", ".join(x for x in (p_strada, p_zona, p_oras) if x)
+    if d_oras and d_oras.lower() != p_oras.lower():
+        destinatie = d_oras
+    elif p_oras:
+        destinatie = f"în {p_oras}"      # destinația goală = același oraș
+    else:
+        destinatie = ""
+
+    fapte = [("Serviciu", serviciu), ("Vehicul", vehicul), ("Plecare", plecare),
+             ("Destinație", destinatie), ("Data", data_disp)]
+    dl = "\n".join(f"        <dt>{esc(k)}</dt><dd>{esc(v)}</dd>" for k, v in fapte if v)
+    out = f"""    <section class="prestatie-detalii" aria-labelledby="detalii-titlu">
+      <h2 id="detalii-titlu">Detalii intervenție</h2>
+      <dl class="prestatie-facts">
+{dl}
+      </dl>"""
+    if special:
+        out += f"""
+      <p class="prestatie-special"><strong>Ce a fost deosebit:</strong> {esc(special)}</p>"""
+    out += """
+    </section>
+"""
+    return out
+
+
+def raport_date_noi(rows):
+    """Câte lucrări au coloanele de specificitate completate (afișat la final de build)."""
+    if rows and "deosebit" not in rows[0]:
+        print("\n⚠ Coloanele noi (vehicul, plecare_*, destinatie_oras, deosebit) lipsesc din sursa de date.")
+        print("  Paginile se generează ca înainte; adaugă coloanele în Google Sheet ca să apară detaliile.")
+        return
+    total = len([r for r in rows if field(r, "slug")])
+    print("\n📊 Completare date de specificitate:")
+    for col in ("vehicul", "plecare_zona", "plecare_strada", "destinatie_oras", "deosebit"):
+        n = len([r for r in rows if field(r, "slug") and field(r, col)])
+        print(f"   {col:<16} {n}/{total}")
+
+
 # ── Generator pagini individuale ──────────────────────────────────────────────
 
 def build_page(row):
@@ -157,11 +227,14 @@ def build_page(row):
     titlu       = row["titlu"].strip()
     titlu_seo   = row["titlu_seo"].strip()
     serviciu    = row["serviciu"].strip()
-    locatie     = row["locatie"].strip()
+    locatie     = (field(row, "locatie") or traseu(row))
     desc_pagina = row["descriere_pagina"].strip()
     meta_desc   = row["meta_desc"].strip()
     folder      = row.get("folder", "").strip()
     imgs        = images_for_row(row)
+    zona        = field(row, "plecare_zona")
+    detalii     = detalii_html(row, serviciu, data_disp)
+    chip_locatie = f'<span class="chip">{locatie}</span>' if locatie else ""
 
     canonical = f"https://tractariautobraila.ro/portofoliu/{slug}.html"
 
@@ -184,7 +257,7 @@ def build_page(row):
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      {{"@type":"ListItem","position":1,"name":"Acasă","item":"https://tractariautobraila.ro/"}},
+      {{"@type":"ListItem","position":1,"name":"{BRAND}","item":"https://tractariautobraila.ro/"}},
       {{"@type":"ListItem","position":2,"name":"Portofoliu","item":"https://tractariautobraila.ro/portofoliu.html"}},
       {{"@type":"ListItem","position":3,"name":"{titlu}","item":"{canonical}"}}
     ]
@@ -194,7 +267,8 @@ def build_page(row):
     gallery_html = ""
     for i, (fld, fname) in enumerate(imgs):
         src  = img_src(fld, fname)
-        alt  = f"{titlu} — fotografie {i+1}"
+        alt_base = f"{titlu}, {zona}" if zona else titlu
+        alt  = esc(f"{alt_base} — fotografie {i+1}")
         load = "eager" if i == 0 else "lazy"
         gallery_html += f'  <img src="{src}" alt="{alt}" loading="{load}" width="1200" height="900">\n'
 
@@ -232,7 +306,7 @@ def build_page(row):
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="breadcrumb">
-        <li><a href="/">Acasă</a></li>
+        <li><a href="/">{BRAND}</a></li>
         <li><a href="/portofoliu.html">Portofoliu</a></li>
         <li>{titlu}</li>
       </ol>
@@ -245,7 +319,7 @@ def build_page(row):
           <time datetime="{datetime_at}">{data_disp}</time>
         </span>
         <span class="chip">{serviciu}</span>
-        <span class="chip">{locatie}</span>
+        {chip_locatie}
       </div>
     </div>
 
@@ -255,6 +329,10 @@ def build_page(row):
 
     <!-- Descriere -->
     <p class="prestatie-desc">{desc_pagina}</p>
+
+{detalii}
+    <!-- Legătura către pagina principală -->
+    <p class="prestatie-parent">Intervenția face parte din serviciul nostru de <a href="/">tractări auto Brăila</a>. Tarife orientative și detalii: <a href="/servicii.html">pagina de servicii</a>.</p>
 
     <!-- CTA -->
     <div class="prestatie-cta">
@@ -289,7 +367,7 @@ def build_index(rows):
         data_disp   = row["data_display"].strip()
         titlu       = row["titlu"].strip()
         serviciu    = row["serviciu"].strip()
-        locatie     = row["locatie"].strip()
+        locatie     = (field(row, "locatie") or traseu(row))
         desc_card   = row["descriere_card"].strip()
         folder      = row.get("folder","").strip()
         cover       = row.get("cover","").strip()
@@ -345,7 +423,7 @@ def build_index(rows):
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      {{"@type":"ListItem","position":1,"name":"Acasă","item":"https://tractariautobraila.ro/"}},
+      {{"@type":"ListItem","position":1,"name":"{BRAND}","item":"https://tractariautobraila.ro/"}},
       {{"@type":"ListItem","position":2,"name":"Portofoliu","item":"https://tractariautobraila.ro/portofoliu.html"}}
     ]
   }}
@@ -360,7 +438,7 @@ def build_index(rows):
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="breadcrumb">
-        <li><a href="/">Acasă</a></li>
+        <li><a href="/">{BRAND}</a></li>
         <li>Portofoliu</li>
       </ol>
     </nav>
@@ -406,6 +484,7 @@ def main():
     print("\n🗂 Regenerez portofoliu.html...")
     build_index(rows)
 
+    raport_date_noi(rows)
     print(f"\n✅ Gata! {len(rows)} prestații procesate.")
     print("   Urmează: commit + push în GitHub Desktop.\n")
 

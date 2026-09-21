@@ -254,3 +254,13 @@ img{max-width:100%;height:auto;border-radius:12px;display:block}
   .prestatie-gallery { grid-template-columns: 1fr; }
   .prestatie-gallery img:first-child { aspect-ratio:4/3; }
 }
+
+/* ===== Detalii intervenție (portofoliu) ===== */
+.prestatie-detalii { margin: 0 0 28px; padding: 18px; background: var(--card); border: 1px solid #ffffff12; border-radius: 16px; }
+.prestatie-detalii h2 { font-size: 18px; margin: 0 0 12px; }
+.prestatie-facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0 0 12px; }
+.prestatie-facts dt { color: var(--muted); }
+.prestatie-facts dd { margin: 0; }
+.prestatie-special { margin: 0; color: #cbd5e1; line-height: 1.7; }
+.prestatie-parent { color: var(--muted); margin: 0 0 28px; }
+.prestatie-parent a { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
