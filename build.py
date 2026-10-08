@@ -20,6 +20,7 @@ GOOGLE SHEETS (opțional):
 """
 
 import csv
+import json
 import os
 import re
 import sys
@@ -43,6 +44,10 @@ TELEFON_URL = "tel:+40736390565"
 
 # Primul element din breadcrumb (în loc de „Acasă”): cuvinte-cheie pe fiecare pagină
 BRAND       = "Tractări Auto Brăila"
+
+# Firma care operează serviciul (apare în schema JSON-LD și pe paginile de lucrare)
+FIRMA       = "I&R START TRANS S.R.L."
+FIRMA_ID    = "https://tractariautobraila.ro/#firma"   # același @id ca în JSON-LD din index.html
 
 # Domeniul site-ului (folosit în sitemap.xml)
 SITE_URL    = "https://tractariautobraila.ro"
@@ -389,6 +394,18 @@ def build_page(row):
     ]
   }}"""
 
+    # ── Schema Service: leagă lucrarea de firmă (provider = @id din index.html) ─
+    schema_service = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": titlu,
+        "serviceType": serviciu,
+        "url": canonical,
+        "areaServed": ["Brăila", "Galați"],
+        "provider": {"@type": "TowingService", "@id": FIRMA_ID,
+                     "name": BRAND, "legalName": FIRMA},
+    }, ensure_ascii=False, indent=2).replace("\n", "\n  ").replace("</", "<\\/")
+
     # ── Galerie imagini ──────────────────────────────────────────────────────
     gallery_html = ""
     for i, (fld, fname) in enumerate(imgs):
@@ -421,6 +438,9 @@ def build_page(row):
   <script defer src="/assets/js/main.js"></script>
   <script type="application/ld+json">
   {schema_breadcrumb}
+  </script>
+  <script type="application/ld+json">
+  {schema_service}
   </script>
 </head>
 <body>
@@ -459,6 +479,7 @@ def build_page(row):
 {detalii}
     <!-- Legătura către pagina principală -->
     <p class="prestatie-parent">Intervenția face parte din serviciul nostru de <a href="/">tractări auto Brăila</a>. Tarife orientative și detalii: <a href="/servicii.html">pagina de servicii</a>.</p>
+    <p class="prestatie-firma muted">Intervenție realizată de echipa {esc(FIRMA)} — asistență rutieră non-stop, 24/7.</p>
 
     <!-- CTA -->
     <div class="prestatie-cta">
