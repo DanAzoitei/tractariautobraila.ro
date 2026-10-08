@@ -499,6 +499,50 @@ def build_page(row):
     print(f"  ✓ portofoliu/{slug}.html")
 
 
+# ── „Lucrări recente” pe pagina principală ───────────────────────────────────
+
+NR_RECENTE = 4
+_RE_RECENTE = re.compile(r'<!-- @recente:start -->.*?<!-- @recente:end -->', re.S)
+
+
+def build_home_recent(rows):
+    """Pune în index.html coperțile ultimelor NR_RECENTE lucrări, cu link către pagina lor.
+    Înlocuiește blocul dintre <!-- @recente:start --> și <!-- @recente:end -->."""
+    path = Path("index.html")
+    raw = path.read_bytes().decode("utf-8")
+    crlf = "\r\n" in raw
+    page = raw.replace("\r\n", "\n")
+    m = _RE_RECENTE.search(page)
+    if not m:
+        print("  ⚠ index.html nu are markerele @recente — sar peste")
+        return
+    # indentarea markerului de start
+    line_start = page.rfind("\n", 0, m.start()) + 1
+    ind = page[line_start:m.start()]
+
+    recente = [r for r in sorted(rows, key=lambda r: r.get("data_iso", ""), reverse=True)
+               if field(r, "slug") and field(r, "cover")][:NR_RECENTE]
+    items = []
+    for r in recente:
+        href = f"/portofoliu/{field(r, 'slug')}.html"
+        src  = img_src(field(r, "folder"), field(r, "cover"))
+        alt  = esc(f"{field(r, 'titlu')} — {field(r, 'data_display')}")
+        items.append(f'{ind}  <a href="{href}" title="{alt}"><img loading="lazy" src="{src}" alt="{alt}" width="1200" height="900"></a>')
+    block = ("<!-- @recente:start -->\n"
+             f"{ind}<!-- generat de build.py din ultimele {NR_RECENTE} lucrări — nu edita aici -->\n"
+             f'{ind}<div class="grid-portfolio">\n' + "\n".join(items) + "\n"
+             f"{ind}</div>\n"
+             f"{ind}<!-- @recente:end -->")
+    new = page[:m.start()] + block + page[m.end():]
+    if crlf:
+        new = new.replace("\n", "\r\n")
+    if new != raw:
+        path.write_bytes(new.encode("utf-8"))
+        print(f"  ✓ index.html — {len(items)} lucrări recente")
+    else:
+        print("  = index.html (lucrări recente neschimbate)")
+
+
 # ── Generator portofoliu.html ─────────────────────────────────────────────────
 
 def build_index(rows):
@@ -630,6 +674,9 @@ def main():
 
     print("\n🗂 Regenerez portofoliu.html...")
     build_index(rows)
+
+    print("\n🏠 Lucrări recente pe pagina principală...")
+    build_home_recent(rows)
 
     print("\n🧩 Header/footer inline în paginile din rădăcină...")
     sync_static_pages()

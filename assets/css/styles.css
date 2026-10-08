@@ -43,6 +43,9 @@ img{max-width:100%;height:auto;border-radius:12px;display:block}
 .grid-portfolio{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .grid-portfolio.big{grid-template-columns:repeat(3,minmax(0,1fr))}
 .center{text-align:center;margin:18px 0}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0 20px}
+.hero .cta-row{justify-content:center;margin:20px 0 24px}
+.grid-portfolio img{width:100%;aspect-ratio:4/3;object-fit:cover}
 
 .btn{display:inline-block;padding:12px 16px;border-radius:12px;border:1px solid #ffffff22}
 .btn-primary{background:var(--brand);color:#071016;border-color:transparent;font-weight:800;box-shadow:0 6px 22px var(--ring)}
