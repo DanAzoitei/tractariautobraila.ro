@@ -48,6 +48,7 @@ BRAND       = "Tractări Auto Brăila"
 # Firma care operează serviciul (apare în schema JSON-LD și pe paginile de lucrare)
 FIRMA       = "I&R START TRANS S.R.L."
 FIRMA_ID    = "https://tractariautobraila.ro/#firma"   # același @id ca în JSON-LD din index.html
+REVIEW_URL  = "https://g.page/r/CQeWvmGZrU59EBM/review"   # link direct „Scrie o recenzie” din Google Business Profile
 
 # Domeniul site-ului (folosit în sitemap.xml)
 SITE_URL    = "https://tractariautobraila.ro"
@@ -480,6 +481,7 @@ def build_page(row):
     <!-- Legătura către pagina principală -->
     <p class="prestatie-parent">Intervenția face parte din serviciul nostru de <a href="/">tractări auto Brăila</a>. Tarife orientative și detalii: <a href="/servicii.html">pagina de servicii</a>.</p>
     <p class="prestatie-firma muted">Intervenție realizată de echipa {esc(FIRMA)} — asistență rutieră non-stop, 24/7.</p>
+    <p class="prestatie-review">Ai apelat la noi? <a href="{REVIEW_URL}" target="_blank" rel="noopener">Lasă-ne o recenzie pe Google</a> — ne ajută să fim găsiți de cei care au nevoie.</p>
 
     <!-- CTA -->
     <div class="prestatie-cta">
