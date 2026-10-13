@@ -479,7 +479,7 @@ def build_page(row):
 
 {detalii}
     <!-- Legătura către pagina principală -->
-    <p class="prestatie-parent">Intervenția face parte din serviciul nostru de <a href="/">tractări auto Brăila</a>. Tarife orientative și detalii: <a href="/servicii.html">pagina de servicii</a>.</p>
+    <p class="prestatie-parent">Intervenția face parte din serviciul nostru de <a href="/">tractări auto Brăila</a>. Servicii și tarife: <a href="/servicii.html">pagina de servicii și tarife</a>.</p>
     <p class="prestatie-firma muted">Intervenție realizată de echipa {esc(FIRMA)} — asistență rutieră non-stop, 24/7.</p>
     <p class="prestatie-review">Ai apelat la noi? <a href="{REVIEW_URL}" target="_blank" rel="noopener">Lasă-ne o recenzie pe Google</a> — ne ajută să fim găsiți de cei care au nevoie.</p>
 
