@@ -168,6 +168,66 @@ def img_src(folder, filename):
     return f"/assets/img/portfolio/{filename}"
 
 
+# ── Imagini optimizate (WebP, 600 și 1200 px) ─────────────────────────────────
+# Necesită Pillow (pip install pillow). Fără Pillow, paginile folosesc jpg-urile originale.
+OPT_DIR    = "assets/img/opt"
+OPT_WIDTHS = (600, 1200)
+try:
+    from PIL import Image, ImageOps
+except ImportError:
+    Image = None
+_opt_warned = False
+_opt_new = 0
+
+
+def _opt_path(folder, filename, w):
+    stem = Path(filename).stem
+    return Path(OPT_DIR) / (folder or "") / f"{stem}-{w}.webp"
+
+
+def optimize_image(folder, filename):
+    """Generează (doar dacă lipsesc sau sunt mai vechi decât originalul) variantele WebP.
+    Întoarce True dacă variantele există."""
+    global _opt_warned, _opt_new
+    src = Path(IMAGES_DIR) / (folder or "") / filename
+    if not src.exists():
+        return False
+    if Image is None:
+        # Fără Pillow: folosim variantele WebP doar dacă există deja (generate anterior)
+        if all(_opt_path(folder, filename, w).exists() for w in OPT_WIDTHS):
+            return True
+        if not _opt_warned:
+            print("  ⚠ Pillow lipsește (pip install pillow) — pentru pozele noi folosesc jpg-ul original")
+            _opt_warned = True
+        return False
+    for w in OPT_WIDTHS:
+        out = _opt_path(folder, filename, w)
+        if out.exists() and out.stat().st_mtime >= src.stat().st_mtime:
+            continue
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with Image.open(src) as im:
+            im = ImageOps.exif_transpose(im).convert("RGB")
+            if im.width > w:
+                im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+            im.save(out, "WEBP", quality=78, method=6)
+        _opt_new += 1
+    return True
+
+
+def img_attrs(folder, filename, sizes):
+    """Atributele src/srcset/sizes pentru <img>: WebP dacă se poate, altfel jpg-ul original."""
+    if optimize_image(folder, filename):
+        def url(w):
+            return "/" + _opt_path(folder, filename, w).as_posix()
+        srcset = ", ".join(f"{url(w)} {w}w" for w in OPT_WIDTHS)
+        return f'src="{url(OPT_WIDTHS[-1])}" srcset="{srcset}" sizes="{sizes}"'
+    return f'src="{img_src(folder, filename)}"'
+
+
+SIZES_THUMB   = "(max-width: 700px) 50vw, 300px"
+SIZES_GALLERY = "(max-width: 700px) 100vw, 1100px"
+
+
 def field(row, key):
     """Valoare curată dintr-un câmp opțional; lipsa coloanei, None și '--' = gol."""
     v = (row.get(key) or "").strip()
@@ -410,11 +470,11 @@ def build_page(row):
     # ── Galerie imagini ──────────────────────────────────────────────────────
     gallery_html = ""
     for i, (fld, fname) in enumerate(imgs):
-        src  = img_src(fld, fname)
+        attrs = img_attrs(fld, fname, SIZES_GALLERY)
         alt_base = f"{titlu}, {zona}" if zona else titlu
         alt  = esc(f"{alt_base} — fotografie {i+1}")
         load = "eager" if i == 0 else "lazy"
-        gallery_html += f'  <img src="{src}" alt="{alt}" loading="{load}" width="1200" height="900">\n'
+        gallery_html += f'  <img {attrs} alt="{alt}" loading="{load}" width="1200" height="900">\n'
 
     # ── HTML complet ─────────────────────────────────────────────────────────
     html = f"""<!doctype html>
@@ -479,7 +539,7 @@ def build_page(row):
 
 {detalii}
     <!-- Legătura către pagina principală -->
-    <p class="prestatie-parent">Intervenția face parte din serviciul nostru de <a href="/">tractări auto Brăila</a>. Servicii și tarife: <a href="/servicii.html">pagina de servicii și tarife</a>.</p>
+    <p class="prestatie-parent">Intervenția face parte din serviciul nostru de <a href="/">tractări și platformă auto în Brăila</a>. Servicii și tarife: <a href="/servicii.html">pagina de servicii și tarife</a>.</p>
     <p class="prestatie-firma muted">Intervenție realizată de echipa {esc(FIRMA)} — asistență rutieră non-stop, 24/7.</p>
     <p class="prestatie-review">Ai apelat la noi? <a href="{REVIEW_URL}" target="_blank" rel="noopener">Lasă-ne o recenzie pe Google</a> — ne ajută să fim găsiți de cei care au nevoie.</p>
 
@@ -527,9 +587,9 @@ def build_home_recent(rows):
     items = []
     for r in recente:
         href = f"/portofoliu/{field(r, 'slug')}.html"
-        src  = img_src(field(r, "folder"), field(r, "cover"))
+        attrs = img_attrs(field(r, "folder"), field(r, "cover"), SIZES_THUMB)
         alt  = esc(f"{field(r, 'titlu')} — {field(r, 'data_display')}")
-        items.append(f'{ind}  <a href="{href}" title="{alt}"><img loading="lazy" src="{src}" alt="{alt}" width="1200" height="900"></a>')
+        items.append(f'{ind}  <a href="{href}" title="{alt}"><img loading="lazy" {attrs} alt="{alt}" width="1200" height="900"></a>')
     block = ("<!-- @recente:start -->\n"
              f"{ind}<!-- generat de build.py din ultimele {NR_RECENTE} lucrări — nu edita aici -->\n"
              f'{ind}<div class="grid-portfolio">\n' + "\n".join(items) + "\n"
@@ -564,7 +624,8 @@ def build_index(rows):
         desc_card   = row["descriere_card"].strip()
         folder      = row.get("folder","").strip()
         cover       = row.get("cover","").strip()
-        src         = img_src(folder, cover) if cover else "/assets/img/portfolio/caz-01.jpg"
+        attrs       = (img_attrs(folder, cover, SIZES_THUMB) if cover
+                       else 'src="/assets/img/portfolio/caz-01.jpg"')
         href        = f"/portofoliu/{slug}.html"
         alt         = f"{data_disp} – {titlu}"
 
@@ -572,7 +633,7 @@ def build_index(rows):
       <article class="card">
         <a class="card__media" href="{href}">
           <img
-            src="{src}"
+            {attrs}
             alt="{alt}"
             loading="lazy"
             width="1200"
@@ -686,6 +747,8 @@ def main():
     print("\n🗺 Generez sitemap.xml...")
     build_sitemap(rows)
 
+    if _opt_new:
+        print(f"\n🖼 {_opt_new} imagini WebP noi în {OPT_DIR}/ (de inclus în commit)")
     raport_date_noi(rows)
     print(f"\n✅ Gata! {len(rows)} prestații procesate.")
     print("   Urmează: commit + push în GitHub Desktop.\n")
