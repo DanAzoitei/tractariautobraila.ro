@@ -717,6 +717,30 @@ def build_index(rows):
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+def filtreaza_programate(rows):
+    """Coloana opțională `data_publicare` (AAAA-LL-ZZ): lucrarea apare pe site abia când data a sosit.
+    Gol = se publică imediat. Întoarce doar rândurile de publicat și afișează coada."""
+    azi = datetime.now().strftime("%Y-%m-%d")
+    publicate, in_asteptare = [], []
+    for r in rows:
+        dp = field(r, "data_publicare")
+        m = re.fullmatch(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", dp)   # acceptă și ZZ.LL.AAAA
+        if m:
+            dp = f"{m.group(3)}-{int(m.group(2)):02d}-{int(m.group(1)):02d}"
+        if dp and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", dp):
+            print(f"  ⚠ data_publicare invalidă la {field(r, 'slug')}: „{dp}” (format AAAA-LL-ZZ sau ZZ.LL.AAAA) — public acum")
+            dp = ""
+        (in_asteptare if dp and dp > azi else publicate).append((dp, r))
+    if in_asteptare:
+        print(f"\n⏳ {len(in_asteptare)} lucrări programate (nepublicate încă):")
+        for dp, r in sorted(in_asteptare, key=lambda x: x[0]):
+            slug = field(r, "slug")
+            extra = "  ⚠ pagina există deja în portofoliu/ — ștearg-o dacă nu trebuie să fie online" \
+                if slug and (Path("portofoliu") / f"{slug}.html").exists() else ""
+            print(f"   {dp}  {field(r, 'titlu')} ({field(r, 'data_display')}){extra}")
+    return [r for _, r in publicate]
+
+
 def main():
     # Schimbă directorul de lucru la rădăcina proiectului
     script_dir = Path(__file__).parent
@@ -728,6 +752,7 @@ def main():
     if not rows:
         print("⚠ Nu am găsit rânduri în CSV. Verifică data/prestatii.csv")
         sys.exit(1)
+    rows = filtreaza_programate(rows)
 
     print("\n📄 Generez paginile individuale...")
     Path("portofoliu").mkdir(exist_ok=True)
