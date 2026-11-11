@@ -545,7 +545,7 @@ def build_page(row):
 
     <!-- CTA -->
     <div class="prestatie-cta">
-      <a class="btn btn-primary" href="{TELEFON_URL}">📞 Sună acum — {TELEFON}</a>
+      <a class="btn btn-primary" href="{TELEFON_URL}"><svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11 11 0 003.5.56 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.56 3.5 1 1 0 01-.25 1z"/></svg> Sună acum — {TELEFON}</a>
       <a class="btn btn-outline" href="/portofoliu.html">← Înapoi la portofoliu</a>
     </div>
 

@@ -22,10 +22,21 @@ function wireMenuToggle(){
   const nav = document.querySelector('.main-nav');
   if(!btn || !nav) return;
   btn.addEventListener('click', () => {
-    const open = nav.style.display === 'block';
-    nav.style.display = open ? 'none' : 'block';
-    btn.setAttribute('aria-expanded', String(!open));
+    const open = nav.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Închide meniul' : 'Deschide meniul');
   });
+}
+
+// Butonul plutitor „Sună acum” apare doar după ce ai derulat dincolo de hero
+function wireFloatingCall(){
+  const fab = document.querySelector('.btn-call-floating');
+  const hero = document.querySelector('.hero');
+  if(!fab || !hero || !('IntersectionObserver' in window)) return;
+  fab.classList.add('is-hidden');
+  new IntersectionObserver(([e]) => {
+    fab.classList.toggle('is-hidden', e.isIntersecting);
+  }).observe(hero);
 }
 
 function setCopyYear(){
@@ -39,5 +50,6 @@ function setCopyYear(){
   // după injectare, leagă comportamente:
   activateCurrentNav();
   wireMenuToggle();
+  wireFloatingCall();
   setCopyYear();
 })();
