@@ -380,9 +380,26 @@ def sync_static_pages():
 
 # ── Sitemap ───────────────────────────────────────────────────────────────────
 
+def _iso_publicare(row):
+    """data_publicare normalizată la AAAA-LL-ZZ (acceptă și ZZ.LL.AAAA); "" dacă lipsește/invalidă."""
+    dp = field(row, "data_publicare")
+    m = re.fullmatch(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", dp)
+    if m:
+        dp = f"{m.group(3)}-{int(m.group(2)):02d}-{int(m.group(1)):02d}"
+    return dp if re.fullmatch(r"\d{4}-\d{2}-\d{2}", dp) else ""
+
+
+def data_aparitie(row):
+    """Data la care lucrarea a apărut pe site: data_publicare dacă e mai nouă decât data intervenției."""
+    return max(field(row, "data_iso"), _iso_publicare(row))
+
+
 def build_sitemap(rows):
     """Generează sitemap.xml: paginile HTML din rădăcină + fiecare lucrare din portofoliu.
-    lastmod apare doar pentru lucrări (data intervenției, din data_iso)."""
+    lastmod: lucrări = data apariției pe site (data_publicare, altfel data intervenției);
+    index.html și portofoliu.html = data celei mai noi lucrări publicate (se schimbă „Lucrări recente”)."""
+    ultima = max((data_aparitie(r) for r in rows if field(r, "slug")), default="")
+    cu_lastmod = {"index.html", "portofoliu.html"}
     ordine = {"index.html": 0, "servicii.html": 1, "portofoliu.html": 2, "contact.html": 3}
     urls = []
     pagini = sorted((p for p in Path(".").glob("*.html") if p.name not in FRAGMENT_FILES),
@@ -392,11 +409,11 @@ def build_sitemap(rows):
         if re.search(r'<meta[^>]+name=["\']robots["\'][^>]+noindex', head, re.I):
             continue
         loc = f"{SITE_URL}/" if path.name == "index.html" else f"{SITE_URL}/{path.name}"
-        urls.append((loc, ""))
+        urls.append((loc, ultima if path.name in cu_lastmod else ""))
     for row in sorted(rows, key=lambda r: r.get("data_iso", ""), reverse=True):
         slug = field(row, "slug")
         if slug:
-            urls.append((f"{SITE_URL}/portofoliu/{slug}.html", field(row, "data_iso")))
+            urls.append((f"{SITE_URL}/portofoliu/{slug}.html", data_aparitie(row)))
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
