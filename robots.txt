@@ -2,4 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /header.html
 Disallow: /footer.html
+Disallow: /data/
+Disallow: /Claude%20outputs/
+Disallow: /build.py
+Disallow: /build.bat
 Sitemap: https://tractariautobraila.ro/sitemap.xml

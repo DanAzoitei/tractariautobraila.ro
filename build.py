@@ -20,6 +20,7 @@ GOOGLE SHEETS (opțional):
 """
 
 import csv
+import io
 import json
 import os
 import re
@@ -33,7 +34,7 @@ from pathlib import Path
 
 # Sursa de date: CSV local (implicit) sau Google Sheets publicat
 LOCAL_CSV   = "data/prestatii.csv"
-SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/1WtZeFDG46sM0xeKjvOjx23kMjIAjpu01HfF6IuHL1eY/export?format=csv&gid=0"   # ← Google Sheets export direct (sheet setat Anyone with link can view/edit)
+SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmMj6flcSMZT9N6QH8lrh9psaJV3XvLFCniOoDpWj2O8Reh0PYtc0Z3PLUs9KbGFT33-4utmxxoSm/pub?gid=82738278&single=true&output=csv"   # ← tab-ul „public” (doar coloanele A–V), publicat cu File → Share → Publish to web; Sheet-ul în sine e restricționat
 
 # Folderul cu imaginile de portofoliu (relativ față de rădăcina proiectului)
 IMAGES_DIR  = "assets/img/portfolio"
@@ -122,6 +123,22 @@ COOKIE_BANNER = """<div id="cookie-banner" class="cookie-banner" role="dialog" a
 
 # ── Funcții helpers ────────────────────────────────────────────────────────────
 
+# Coloane interne din Sheet: nu ajung nici pe site, nici în CSV-ul din depozit (care e public pe GitHub)
+COLOANE_INTERNE = {"facebook_postat", "facebook_text", "avarie_intern"}
+
+
+def curata_rand(row):
+    """Textele din Sheet ajung direct în HTML: scoatem < > și înlocuim ghilimelele drepte,
+    ca un text greșit (sau modificat de altcineva) să nu poată strica pagina sau injecta cod."""
+    out = {}
+    for k, v in row.items():
+        if k is None or k in COLOANE_INTERNE:
+            continue
+        v = (v or "").replace("<", "").replace(">", "").replace('"', "”")
+        out[k] = v
+    return out
+
+
 def load_rows():
     """Încarcă rândurile din CSV local sau Google Sheets."""
     if SHEETS_CSV_URL:
@@ -129,10 +146,12 @@ def load_rows():
         try:
             with urllib.request.urlopen(SHEETS_CSV_URL) as r:
                 content = r.read().decode("utf-8-sig").replace('\x00', '')
-            rows = list(csv.DictReader(content.splitlines()))
+            rows = list(csv.DictReader(io.StringIO(content)))
+            # Protecție: dacă Sheet-ul nu e public, Google întoarce o pagină de login (HTML), nu CSV
+            if not rows or "slug" not in rows[0] or "data_iso" not in rows[0]:
+                raise ValueError("răspunsul nu e CSV-ul așteptat (Sheet nepublicat sau link greșit)")
+            rows = [curata_rand(r) for r in rows if (r.get("slug") or "").strip()]
             print(f"  ✓ {len(rows)} rânduri din Google Sheets")
-            if not rows:
-                raise ValueError("Google Sheets a returnat 0 rânduri — folosesc CSV local.")
             # Actualizează și CSV-ul local ca backup
             with open(LOCAL_CSV, "w", encoding="utf-8-sig", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=rows[0].keys())
@@ -144,6 +163,7 @@ def load_rows():
 
     with open(LOCAL_CSV, encoding="utf-8-sig") as f:
         rows = list(csv.DictReader(line.replace('\x00', '') for line in f))
+    rows = [curata_rand(r) for r in rows if (r.get("slug") or "").strip()]
     print(f"  ✓ {len(rows)} rânduri din {LOCAL_CSV}")
     return rows
 
