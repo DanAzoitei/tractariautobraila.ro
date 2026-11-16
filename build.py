@@ -124,7 +124,7 @@ COOKIE_BANNER = """<div id="cookie-banner" class="cookie-banner" role="dialog" a
 # ── Funcții helpers ────────────────────────────────────────────────────────────
 
 # Coloane interne din Sheet: nu ajung nici pe site, nici în CSV-ul din depozit (care e public pe GitHub)
-COLOANE_INTERNE = {"facebook_postat", "facebook_text", "avarie_intern"}
+COLOANE_INTERNE = {"facebook_postat", "FB_postat", "facebook_text", "avarie_intern"}
 
 
 def curata_rand(row):
